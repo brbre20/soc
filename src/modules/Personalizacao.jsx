@@ -179,63 +179,127 @@ export default function Personalizacao() {
           Escolha entre 8 temas cuidadosamente selecionados ou crie o seu próprio
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px' }}>
           {Object.entries(TEMAS).map(([id, tema]) => (
             <button
               key={id}
               onClick={() => handleTema(id)}
               style={{
-                padding: '16px',
-                borderRadius: '14px',
+                padding: '0',
+                borderRadius: '16px',
                 border: `2px solid ${temaAtivo === id && !modoCustom ? tema.cores.primary : 'var(--border-color)'}`,
-                background: `linear-gradient(135deg, ${tema.cores.primary}15, ${tema.cores.secondary}15)`,
+                background: 'var(--bg-card)',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
+                transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                 textAlign: 'left',
                 position: 'relative',
                 overflow: 'hidden',
+                boxShadow: temaAtivo === id && !modoCustom 
+                  ? (tema.efeitos?.glow || 'none') 
+                  : 'none',
               }}
               onMouseOver={e => { 
                 if (temaAtivo !== id) {
-                  e.currentTarget.style.transform = 'translateY(-3px)';
-                  e.currentTarget.style.boxShadow = `0 8px 20px ${tema.cores.primary}30`;
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = tema.efeitos?.glow || `0 8px 20px ${tema.cores.primary}40`;
+                  e.currentTarget.style.borderColor = tema.cores.primary;
                 }
               }}
               onMouseOut={e => { 
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+                if (temaAtivo !== id || modoCustom) {
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'var(--border-color)';
+                } else {
+                  e.currentTarget.style.boxShadow = tema.efeitos?.glow || 'none';
+                }
               }}
             >
-              {temaAtivo === id && !modoCustom && (
+              {/* Faixa hero com gradiente exclusivo do tema */}
+              <div style={{
+                height: '70px',
+                background: tema.gradientes?.hero || `linear-gradient(135deg, ${tema.cores.primary}, ${tema.cores.secondary})`,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '38px',
+                overflow: 'hidden',
+              }}>
+                {/* Efeito de brilho suave */}
                 <div style={{
                   position: 'absolute',
-                  top: '8px',
-                  right: '8px',
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  background: tema.cores.primary,
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                }}>✓</div>
-              )}
-              <div style={{ fontSize: '32px', marginBottom: '8px' }}>{tema.icone}</div>
-              <div style={{ fontWeight: 700, marginBottom: '4px', fontSize: '14px' }}>{tema.nome}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '10px' }}>{tema.descricao}</div>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                {Object.values(tema.cores).slice(0, 6).map((cor, i) => (
-                  <div key={i} style={{
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '4px',
-                    background: cor,
-                    border: '2px solid rgba(255,255,255,0.1)',
-                  }} />
-                ))}
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)',
+                }} />
+                <span style={{ position: 'relative', zIndex: 1, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))' }}>
+                  {tema.icone}
+                </span>
+                {temaAtivo === id && !modoCustom && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    background: '#fff',
+                    color: tema.cores.primary,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    fontWeight: 900,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  }}>✓</div>
+                )}
+              </div>
+
+              {/* Corpo do card */}
+              <div style={{ padding: '14px 16px 16px' }}>
+                <div style={{ 
+                  fontWeight: 700, 
+                  marginBottom: '3px', 
+                  fontSize: '14px',
+                  color: 'var(--text-primary)',
+                }}>
+                  {tema.nome}
+                </div>
+                <div style={{ 
+                  fontSize: '11px', 
+                  color: 'var(--text-muted)', 
+                  marginBottom: '8px',
+                  lineHeight: 1.4,
+                }}>
+                  {tema.descricao}
+                </div>
+                {tema.personalidade && (
+                  <div style={{ 
+                    fontSize: '10px', 
+                    color: tema.cores.primary, 
+                    fontWeight: 700,
+                    marginBottom: '12px',
+                    letterSpacing: '0.4px',
+                    textTransform: 'uppercase',
+                  }}>
+                    {tema.personalidade}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {Object.values(tema.cores).slice(0, 6).map((cor, i) => (
+                    <div key={i} style={{
+                      width: '18px',
+                      height: '18px',
+                      borderRadius: '4px',
+                      background: cor,
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.15)',
+                    }} />
+                  ))}
+                </div>
               </div>
             </button>
           ))}
