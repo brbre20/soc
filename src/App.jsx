@@ -16,7 +16,6 @@ import Personalizacao from './modules/Personalizacao';
 import ChatProfessor from './modules/ChatProfessor';
 import MinhasProvas from './modules/MinhasProvas';
 import PomodoroTimer from './components/PomodoroTimer';
-import BuscaGlobal from './components/BuscaGlobal';
 import { DataProvider, useData } from './context/DataContext';
 import { aplicarTema } from './utils/temas';
 import { menuItems } from './components/Sidebar';
@@ -26,17 +25,15 @@ function AppContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { data } = useData();
 
-  function changePageTitleAccordingToActiveModule() {
-    const activeItem = menuItems.find(item => item.id === activeModule);
-    document.title = activeItem ? `SOC | ${activeItem.label}` : 'SOC';
-  }
-
   // 🎨 Aplica o tema sempre que as configurações mudarem
   useEffect(() => {
     aplicarTema(data.configuracoes);
   }, [data.configuracoes]);
 
-  useEffect(changePageTitleAccordingToActiveModule, [activeModule]);
+  useEffect(function changePageTitleAccordingToActiveModule() {
+    const activeItem = menuItems.find(item => item.id === activeModule);
+    document.title = activeItem ? `SOC | ${activeItem.label}` : 'SOC';
+  }, [activeModule]);
 
   const renderModule = () => {
     switch (activeModule) {
@@ -76,7 +73,6 @@ function AppContent() {
         {renderModule()}
       </main>
       <PomodoroTimer />
-      <BuscaGlobal onNavigate={setActiveModule} />
     </div>
   );
 }
